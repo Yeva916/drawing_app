@@ -4,20 +4,22 @@ import { COLORS, MENU_ITEMS } from '@/constants'
 import { useEffect } from 'react'
 import { changeColor,changeBrushSize } from '@/slice/toolboxSlice'
 import cx from 'classnames'
-
+import { socket } from '@/client'
 const Toolkit = () => {
     const dispatch = useDispatch()
     const activeMenuItem = useSelector((state) => state.menu.activeMenuItem)
     const showStrokeToolOption = activeMenuItem === MENU_ITEMS.PENCIL
     const showBrushToolOption = activeMenuItem === MENU_ITEMS.ERASER || activeMenuItem === MENU_ITEMS.PENCIL
-    const color = useSelector((state)=>state.toolbox[activeMenuItem].color)
+    const {color,size} = useSelector((state)=>state.toolbox[activeMenuItem])
     const handleColorChange =(color)=>{
        
       dispatch(changeColor({item:activeMenuItem,color}))
+      socket.emit('changeConfig',{color:color,size})
     }
     const handleBrushsize=(event)=>{
         // console.log(color)
         dispatch(changeBrushSize({item:activeMenuItem,size:event.target.value}))
+        socket.emit('changeConfig',{color,size:event.target.value})
     }
     return (
         <div className={styles.toolboxContainer}>

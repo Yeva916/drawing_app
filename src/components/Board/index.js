@@ -3,7 +3,10 @@ import { MENU_ITEMS } from "@/constants";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actionItemClick } from "@/slice/menuSlice";
+import { socket } from "@/client";
 const Board = () => {
+
+  
   const dispatch = useDispatch();
 
   const canvasRef = useRef(null);
@@ -65,11 +68,21 @@ const Board = () => {
 
     const context = canvas.getContext("2d");
     const changeConfig = () => {
-      console.log(color, size);
+      // console.log(color, size);
       context.strokeStyle = color;
       context.lineWidth = size;
     };
+
     changeConfig();
+    socket.on("changeConfig", (data)=>{
+      context.strokeStyle = data.color;
+      context.lineWidth = data.size;
+    });
+
+    return()=>{
+      socket.off('changeConfig')
+    }
+
   }, [color, size]);
 
   useEffect(() => {
@@ -83,6 +96,7 @@ const Board = () => {
       // console.log('mosedowm')
       shouldDraw.current = true;
       beginPath(e.clientX, e.clientY);
+      socket.emit('beginPath',{x:e.clientX,y:e.clientY})
       // context.beginPath()
       // context.moveTo(e.clientX,e.clientY)
     };
@@ -92,6 +106,7 @@ const Board = () => {
       const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
       drawHistory.current.push(imageData);
       historyPointer.current = drawHistory.current.length - 1;
+     
     };
     const handleMouseMove = (e) => {
       // console.log('mousemove')
@@ -99,6 +114,7 @@ const Board = () => {
       if (!shouldDraw.current) return;
 
       drawLine(e.clientX, e.clientY);
+      socket.emit('drawLine',{x:e.clientX,y:e.clientY})
     };
 
     const beginPath = (x, y) => {
@@ -113,10 +129,28 @@ const Board = () => {
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
+
+    socket.on("connect",()=>{
+      console.log('client connected')
+    })
+    socket.on('beginPath',(data)=>{
+      beginPath(data.x,data.y)
+    })
+    socket.on('drawLine',(data)=>{
+      drawLine(data.x,data.y)
+    })
+    // socket.on('changeConfig',(data)=>{
+     
+      
+    // })
+
+
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mouseup", handleMouseUp);
+      socket.off('beginPath')
+      socket.off('drawLine')
     };
   }, []);
   return <canvas ref={canvasRef}></canvas>;
