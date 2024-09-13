@@ -19,6 +19,9 @@ const Menu= ()=>{
 
         dispatch(menuItemClick(itemName))
     }
+    const handleActionClick=(itemName)=>{
+        dispatch(actionItemClick(itemName))
+    }
     return (
         <>
         {/* <script src="https://kit.fontawesome.com/39ea6875ce.js" crossorigin="anonymous"></script> */}
@@ -29,9 +32,9 @@ const Menu= ()=>{
         <div className={cx(styles.iconWrapper,{[styles.active]:activeMenuItem===MENU_ITEMS.ERASER})} onClick={()=>handleMenuClick(MENU_ITEMS.ERASER)} id='ERASER'>
         <FontAwesomeIcon icon={faEraser} className={styles.icon} />
         </div>
-        <div className={styles.iconWrapper}><FontAwesomeIcon icon={faArrowRotateRight} className={styles.icon}/></div>
-        <div className={styles.iconWrapper}><FontAwesomeIcon icon={faArrowRotateLeft} className={styles.icon}/></div>
-        <div className={styles.iconWrapper}><FontAwesomeIcon icon={faFileArrowDown} className={styles.icon}/></div>
+        <div className={styles.iconWrapper}><FontAwesomeIcon icon={faArrowRotateRight} className={styles.icon} onClick={()=>handleActionClick(MENU_ITEMS.REDO)} /></div>
+        <div className={styles.iconWrapper}><FontAwesomeIcon icon={faArrowRotateLeft} className={styles.icon} onClick={()=>handleActionClick(MENU_ITEMS.UNDO)}/></div>
+        <div className={styles.iconWrapper}><FontAwesomeIcon icon={faFileArrowDown} className={styles.icon} onClick={()=>handleActionClick(MENU_ITEMS.DOWNLOAD)}/></div>
     </div>
     </>)
 }

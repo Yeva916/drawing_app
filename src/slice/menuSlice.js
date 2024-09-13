@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { MENU_ITEMS } from '@/constants'
 const initialState = {
     activeMenuItem:MENU_ITEMS.PENCIL,
-    actionMenuItem:''
+    actionMenuItem:null
 }
 
 export const menuSlice = createSlice({

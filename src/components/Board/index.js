@@ -1,12 +1,32 @@
 // import styles from './index.module.css'
+import { MENU_ITEMS } from '@/constants'
 import { useEffect, useLayoutEffect, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import {actionItemClick} from '@/slice/menuSlice'
 const Board = () => {
+    const dispatch = useDispatch()
     const canvasRef = useRef(null)
     const shouldDraw = useRef(false)
     // const color = useSelector((state)=>state.toolbox.color)
-    const activeMenuItem = useSelector((state)=>state.menu.activeMenuItem)
+    const {activeMenuItem,actionMenuItem} = useSelector((state)=>state.menu)
     const {color,size} =useSelector((state)=>state.toolbox[activeMenuItem])
+
+    useEffect(()=>{
+        if(!canvasRef.current) return
+        const canvas = canvasRef.current
+        const context = canvas.getContext('2d')
+        console.log('hello')
+        if(actionMenuItem ===MENU_ITEMS.DOWNLOAD){
+            console.log(actionMenuItem)
+            const URL = canvas.toDataURL()
+            const a = document.createElement('a')
+            a.href = URL
+            a.download = 'to_me.jpg'
+            a.click()
+            dispatch(actionItemClick(null))
+            
+        }
+    },[actionMenuItem,dispatch])
     useEffect(()=>{
         if(!canvasRef.current) return
         const canvas = canvasRef.current
